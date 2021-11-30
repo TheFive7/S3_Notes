@@ -13,7 +13,7 @@ import javafx.stage.Stage;
 import java.io.*;
 
 public class Menu extends Pane {
-    static String user = "antoine";
+    static String user = "user";
     static ObservableList<String> users;
 
     public Menu() {
@@ -79,13 +79,13 @@ public class Menu extends Pane {
             compteur ++;
         }
 
-        // Users
-        ChoiceBox<String> choiceUser = new ChoiceBox<>(users); choiceUser.setLayoutX(650); choiceUser.setLayoutY(200);
-        choiceUser.setOnAction(actionEvent -> chooseUser(choiceUser,textes));
-        choiceUser.setValue(users.get(0));
-
         // Moyenne
         Label labelMoyenne = new Label("Moyenne Générale : " + moyenne); labelMoyenne.setLayoutY(300); labelMoyenne.setLayoutX(600);
+
+        // Users
+        ChoiceBox<String> choiceUser = new ChoiceBox<>(users); choiceUser.setLayoutX(650); choiceUser.setLayoutY(200);
+        choiceUser.setOnAction(actionEvent -> chooseUser(choiceUser,textes,moyenne,total,labelMoyenne,coefficients));
+        choiceUser.setValue(users.get(0));
 
         Button buttonMoyenne = new Button("> Calculer ma moyenne <"); buttonMoyenne.setLayoutY(350); buttonMoyenne.setLayoutX(600);
         buttonMoyenne.setOnAction(actionEvent -> calculerMoyenne(textes,moyenne,total,labelMoyenne,coefficients));
@@ -132,9 +132,11 @@ public class Menu extends Pane {
      * @param choiceBox : ChoiceBox
      * @param textes : Notes
      */
-    public static void chooseUser(ChoiceBox choiceBox,TextArea[] textes){
+    public static void chooseUser(ChoiceBox choiceBox,TextArea[] textes,double moyenne,double total,Label label,double[] coefficients){
+        save("src/main/resources/notes/s3_notes/"+ user +".txt",textes);
         user = (String) choiceBox.getValue();
         load("src/main/resources/notes/s3_notes/"+ user +".txt",textes);
+        calculerMoyenne(textes,moyenne,total,label,coefficients);
     }
 
     /**
