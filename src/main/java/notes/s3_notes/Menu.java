@@ -1,16 +1,37 @@
 package notes.s3_notes;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import javafx.stage.Stage;
+
+import java.io.*;
 
 public class Menu extends Pane {
+    static String user = "antoine";
+    static ObservableList<String> users;
+
     public Menu() {
+
+        users = FXCollections.observableArrayList();
+
+        // Ajouter tous les utilisateurs
+        File repertoire = new File("src/main/resources/notes/s3_notes");
+        String liste[] = repertoire.list();
+
+        if (liste != null) {
+            for (int i = 0; i < liste.length; i++) {
+                final String SEPARATEUR = "\\.";
+                String mots[] = liste[i].split(SEPARATEUR);
+                users.add(mots[0]);
+            }
+        }
+
         String[] moyennes = {
                 "M3101 - C",
                 "M3102 - Réseaux",
@@ -58,6 +79,11 @@ public class Menu extends Pane {
             compteur ++;
         }
 
+        // Users
+        ChoiceBox<String> choiceUser = new ChoiceBox<>(users); choiceUser.setLayoutX(650); choiceUser.setLayoutY(200);
+        choiceUser.setOnAction(actionEvent -> chooseUser(choiceUser,textes));
+        choiceUser.setValue(users.get(0));
+
         // Moyenne
         Label labelMoyenne = new Label("Moyenne Générale : " + moyenne); labelMoyenne.setLayoutY(300); labelMoyenne.setLayoutX(600);
 
@@ -66,13 +92,49 @@ public class Menu extends Pane {
 
         // Save
         Button buttonSave = new Button("Save notes"); buttonSave.setLayoutX(600);
-        buttonSave.setOnAction(actionEvent -> save("src/main/resources/notes/s3_notes/save.txt",textes));
+        buttonSave.setOnAction(actionEvent -> save("src/main/resources/notes/s3_notes/"+ user +".txt",textes));
 
         // Load
         Button buttonLoad = new Button("Load notes"); buttonLoad.setLayoutX(700);
-        buttonLoad.setOnAction(actionEvent -> load("src/main/resources/notes/s3_notes/save.txt",textes));
+        buttonLoad.setOnAction(actionEvent -> load("src/main/resources/notes/s3_notes/"+ user +".txt",textes));
 
-        getChildren().addAll(labelMoyenne,buttonMoyenne,buttonSave,buttonLoad);
+        // Create User
+        Button buttonCreateUser = new Button("Create User"); buttonCreateUser.setLayoutX(650); buttonCreateUser.setLayoutY(100);
+        buttonCreateUser.setOnAction(actionEvent -> createUser());
+
+        getChildren().addAll(labelMoyenne,buttonMoyenne,buttonSave,buttonLoad,buttonCreateUser,choiceUser);
+    }
+
+    /**
+     * Créé un nouveau user.
+     */
+    public static void createUser(){
+        Stage stage = new Stage();
+        Pane pane = new Pane();
+        Label label = new Label("User name : "); label.setLayoutY(100); label.setLayoutX(50);
+        TextArea textAreaUser = new TextArea();
+        textAreaUser.setLayoutY(100); textAreaUser.setLayoutX(150); textAreaUser.setPrefWidth(200); textAreaUser.setPrefHeight(20);
+        Button button = new Button("Submit"); button.setLayoutY(150); button.setLayoutX(200);
+        button.setOnAction(actionEvent -> {
+            TextArea[] textes = new TextArea[15]; for(int i = 0; i < textes.length; i++){textes[i] = new TextArea();}
+            save("src/main/resources/notes/s3_notes/"+ textAreaUser.getText() +".txt",textes);
+            users.add(textAreaUser.getText());
+            stage.close();
+        });
+        pane.getChildren().addAll(label,textAreaUser,button);
+        Scene scene = new Scene(pane, 400, 200);
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    /**
+     * Permet de load un user.
+     * @param choiceBox : ChoiceBox
+     * @param textes : Notes
+     */
+    public static void chooseUser(ChoiceBox choiceBox,TextArea[] textes){
+        user = (String) choiceBox.getValue();
+        load("src/main/resources/notes/s3_notes/"+ user +".txt",textes);
     }
 
     /**
@@ -121,11 +183,11 @@ public class Menu extends Pane {
     }
 
     /**
-     * Permet de charger les notes sauvegardées dans le fichier.
+     * Permet de charger les notes sauvegardées dans ele fichier.
      * @param chemin : Chemin menant à la sauvegarde
      * @param textes : Les textes à changer
      */
-    public void load(String chemin, TextArea[] textes) {
+    public static void load(String chemin, TextArea[] textes) {
         try {
             FileInputStream fileStream = new FileInputStream(chemin);
             ObjectInputStream input = new ObjectInputStream(fileStream);
