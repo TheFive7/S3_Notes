@@ -22,12 +22,12 @@ public class Menu extends Pane {
 
         // Ajouter tous les utilisateurs
         File repertoire = new File("src/main/resources/notes/s3_notes");
-        String liste[] = repertoire.list();
+        String[] liste = repertoire.list();
 
         if (liste != null) {
-            for (int i = 0; i < liste.length; i++) {
+            for (String s : liste) {
                 final String SEPARATEUR = "\\.";
-                String mots[] = liste[i].split(SEPARATEUR);
+                String[] mots = s.split(SEPARATEUR);
                 users.add(mots[0]);
             }
         }
