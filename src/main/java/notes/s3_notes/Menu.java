@@ -90,19 +90,11 @@ public class Menu extends Pane {
         Button buttonMoyenne = new Button("> Calculer ma moyenne <"); buttonMoyenne.setLayoutY(350); buttonMoyenne.setLayoutX(600);
         buttonMoyenne.setOnAction(actionEvent -> calculerMoyenne(textes,moyenne,total,labelMoyenne,coefficients));
 
-        // Save
-        Button buttonSave = new Button("Save notes"); buttonSave.setLayoutX(600);
-        buttonSave.setOnAction(actionEvent -> save("src/main/resources/notes/s3_notes/"+ user +".txt",textes));
-
-        // Load
-        Button buttonLoad = new Button("Load notes"); buttonLoad.setLayoutX(700);
-        buttonLoad.setOnAction(actionEvent -> load("src/main/resources/notes/s3_notes/"+ user +".txt",textes));
-
         // Create User
         Button buttonCreateUser = new Button("Create User"); buttonCreateUser.setLayoutX(650); buttonCreateUser.setLayoutY(100);
         buttonCreateUser.setOnAction(actionEvent -> createUser());
 
-        getChildren().addAll(labelMoyenne,buttonMoyenne,buttonSave,buttonLoad,buttonCreateUser,choiceUser);
+        getChildren().addAll(labelMoyenne,buttonMoyenne,buttonCreateUser,choiceUser);
     }
 
     /**
